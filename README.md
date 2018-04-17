@@ -9,7 +9,7 @@ Live Demo - [react-blockstack.now.sh](https://react-blockstack.now.sh/)
 ## About this starter
 
 This is a barebones kit that should be able to get you up and running with blockstack auth pretty quickly. [Don't know what blockstack is?](https://blockstack.org)
-This starter is using the latest versions of everything it can, React, babel, webpack, etc, with some sensible defaults for bundling. For state management, it's using [redux-bundler](https://reduxbundler.com/) which is an abstraction on top of redux and reselect. State is persisted locally through [money-clip](https://github.com/HenrikJoreteg/money-clip).
+This starter is using the latest versions of everything it can, React, babel, webpack, etc, with some sensible defaults for bundling. For state management, it's using [redux-bundler](https://reduxbundler.com/) which is an abstraction on top of [redux](https://redux.js.org/) and [reselect](https://github.com/reactjs/reselect). State is persisted locally through [money-clip](https://github.com/HenrikJoreteg/money-clip).
 [react-hot-loader](https://github.com/gaearon/react-hot-loader) is also implemented for hot module reloading (HMR) during development. [Prettier](https://prettier.io/) is used for code formatting. Format by using `yarn format`. 
 
 #### Development
