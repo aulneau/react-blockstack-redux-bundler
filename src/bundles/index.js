@@ -1,7 +1,4 @@
-import {
-  composeBundles,
-  createCacheBundle,
-} from 'redux-bundler';
+import { composeBundles, createCacheBundle } from 'redux-bundler';
 
 import auth from '@bundles/auth';
 import extraArgs from '@bundles/extra-args';
