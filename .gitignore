@@ -1,0 +1,8 @@
+.idea/
+dist/
+node_modules/
+.DS_Store
+npm-debug.logo
+.vscode
+.cache
+yarn-error.log
