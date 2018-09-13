@@ -1,7 +1,7 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require('webpack');
 const path = require('path');
 
@@ -60,31 +60,10 @@ module.exports = {
     concatenateModules: JSON.stringify(process.env.NODE_ENV) === 'production',
     runtimeChunk: JSON.stringify(process.env.NODE_ENV) === 'production',
     minimizer: [
-      new UglifyJsPlugin({
-        uglifyOptions: {
-          ecma: 8,
-          compress: {
-            warnings: false,
-            // Disabled because of an issue with Uglify breaking seemingly valid code:
-            // https://github.com/facebook/create-react-app/issues/2376
-            // Pending further investigation:
-            // https://github.com/mishoo/UglifyJS2/issues/2011
-            comparisons: false,
-          },
-          mangle: {
-            safari10: true,
-            reserved: ['BigInteger', 'ECPair', 'Point'],
-          },
-          output: {
-            comments: false,
-            // Turned on because emoji and regex are not minified properly using default
-            // https://github.com/facebook/create-react-app/issues/2488
-            ascii_only: true,
-          },
-        },
+      new TerserPlugin({
         parallel: true,
+        sourceMap: false,
         cache: true,
-        sourceMap: true,
       }),
     ],
     splitChunks: {
