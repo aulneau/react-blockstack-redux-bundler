@@ -1,13 +1,12 @@
 import React from 'react';
 import Profile from '@components/profile';
-import { Link } from 'react-router-dom';
 
 export default () => (
   <div>
     <h1>Homepage</h1>
     <Profile />
-    <Link to="/private">
+    <a href="/private">
       <button>A private page</button>
-    </Link>
+    </a>
   </div>
 );

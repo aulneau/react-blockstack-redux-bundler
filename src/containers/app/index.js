@@ -1,28 +1,54 @@
-import React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { hot } from 'react-hot-loader';
+import React, { PureComponent } from 'react';
 import { connect } from 'redux-bundler-react';
+import navHelper from 'internal-nav-helper';
+import { hot } from 'react-hot-loader';
 
-import Home from '@screens/home';
-import SignIn from '@screens/sign-in';
-import Private from '@screens/private';
-
-const AppRoot = ({ signedIn, signedInPending }) => {
-  const requireAuth = (Component) => (signedIn ? Component : SignIn);
-  if (signedInPending) {
-    return null;
+class App extends PureComponent {
+  componentWillMount() {
+    this.handleRedirect();
   }
-  return (
-    <Router>
-      <>
-        <Route path="/" exact component={Home} />
-        <Route path="/private" component={requireAuth(Private)} />
-        <Route path="/sign-in" component={SignIn} />
-      </>
-    </Router>
-  );
-};
+  componentDidMount() {
+    this.handleRedirect();
+  }
+  componentDidUpdate() {
+    this.handleRedirect();
+  }
+
+  /**
+   * Redirect to sign in if not signed in
+   */
+  handleRedirect = () => {
+    if (this.props.pathname === '/sign-in' && this.props.signedIn) {
+      this.props.doUpdateUrl('/');
+    }
+    if (
+      this.props.pathname !== '/sign-in' &&
+      !this.props.signedIn &&
+      !this.props.signedInPending
+    ) {
+      this.props.doUpdateUrl('/sign-in');
+    }
+  };
+
+  render() {
+    const { doUpdateUrl, route, signedInPending } = this.props;
+
+    const Page = route;
+    return !signedInPending ? (
+      <div onClick={navHelper(doUpdateUrl)}>
+        <Page />
+      </div>
+    ) : null;
+  }
+}
 
 export default hot(module)(
-  connect('selectSignedIn', 'selectSignedInPending', AppRoot),
+  connect(
+    'doUpdateUrl',
+    'selectRoute',
+    'selectPathname',
+    'selectSignedIn',
+    'selectSignedInPending',
+    App,
+  ),
 );

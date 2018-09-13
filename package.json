@@ -6,10 +6,10 @@
   "bugs": "https://github.com/aulneau/react-blockstack-redux-bundler/issues",
   "dependencies": {
     "blockstack": "^18.0.4",
+    "internal-nav-helper": "^1.0.2",
     "money-clip": "^2.0.1",
     "react": "^16.5.0",
     "react-dom": "^16.5.0",
-    "react-router-dom": "^4.2.2",
     "redux-bundler": "^21.0.3",
     "redux-bundler-react": "^1.0.0"
   },
@@ -36,6 +36,7 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.0",
+    "fast-async": "^6.3.7",
     "html-loader": "^0.5.5",
     "html-webpack-inline-source-plugin": "^0.0.10",
     "html-webpack-plugin": "^3.1.0",
@@ -63,6 +64,7 @@
   "repository": "https://github.com/aulneau/react-blockstack-redux-bundler",
   "scripts": {
     "build": "NODE_ENV=production webpack --mode production",
+    "build:analyze": "ANALYZE=true NODE_ENV=production webpack --mode production",
     "dev": "webpack-dev-server --mode development --hot",
     "format": "prettier --write \"src/**/*.js\" && echo -e '\\033[0;32m'💅 Just use prettier'\\033[0m'",
     "start": "serve --single --cors dist"

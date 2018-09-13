@@ -6,11 +6,15 @@ const SizePlugin = require('size-plugin');
 const Webpackbar = require('webpackbar');
 const webpack = require('webpack');
 const path = require('path');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
+
+const analyze = process.env.ANALYZE;
 const isDev = process.env.NODE_ENV !== 'production';
 
 module.exports = {
   entry: {
-    main: ['@babel/polyfill', path.resolve(__dirname, 'src/index.js')],
+    main: [path.resolve(__dirname, 'src/index.js')],
   },
   output: {
     filename: isDev ? '[name].js' : '[name].[contenthash].js',
@@ -148,5 +152,5 @@ module.exports = {
       inlineSource: 'runtime~.+\\.js',
     }),
     new HtmlWebpackInlineSourcePlugin(),
-  ],
+  ].concat(analyze ? [new BundleAnalyzerPlugin()] : []),
 };
