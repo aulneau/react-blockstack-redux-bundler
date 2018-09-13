@@ -141,7 +141,7 @@ module.exports = {
           name: 'vendors',
           chunks: 'initial',
           enforce: true,
-          test: /[\\/](node_modules[\\/]/,
+          test: /[\\/]node_modules[\\/]/,
           priority: -10,
           reuseExistingChunk: true,
         },
