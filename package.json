@@ -5,7 +5,7 @@
   "author": "Thomas Osmonson <hello@ineffable.co>",
   "bugs": "https://github.com/aulneau/react-blockstack-redux-bundler/issues",
   "dependencies": {
-    "blockstack": "^0.17.2",
+    "blockstack": "^18.0.4",
     "money-clip": "^2.0.1",
     "react": "^16.5.0",
     "react-dom": "^16.5.0",
