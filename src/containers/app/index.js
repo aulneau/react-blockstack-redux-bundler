@@ -1,7 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'redux-bundler-react';
 import navHelper from 'internal-nav-helper';
+import { createGlobalStyle } from 'styled-components';
+import { normalize } from 'polished';
 import { hot } from 'react-hot-loader';
+
+const GlobalStyle = createGlobalStyle`
+  ${normalize()};
+`;
 
 class Index extends PureComponent {
   componentWillMount() {
@@ -34,11 +40,12 @@ class Index extends PureComponent {
     const { doUpdateUrl, route, signedInPending } = this.props;
 
     const Page = route;
-    return !signedInPending ? (
+    return (
       <div onClick={navHelper(doUpdateUrl)}>
-        <Page />
+        <GlobalStyle />
+        {signedInPending ? null : <Page />}
       </div>
-    ) : null;
+    );
   }
 }
 

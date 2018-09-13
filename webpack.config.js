@@ -8,6 +8,8 @@ const webpack = require('webpack');
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HSWP = require('hard-source-webpack-plugin');
 
 const analyze = process.env.ANALYZE;
 const isDev = process.env.NODE_ENV !== 'production';
@@ -114,6 +116,7 @@ module.exports = (env) => ({
       '@containers': path.resolve(__dirname, 'src/containers'),
       '@common': path.resolve(__dirname, 'src/common'),
       '@screens': path.resolve(__dirname, 'src/screens'),
+      'redux-bundler': path.resolve(__dirname, 'src/vendor/redux-bundler.m.js'),
     },
   },
   optimization: {
@@ -155,6 +158,7 @@ module.exports = (env) => ({
     },
   },
   plugins: [
+    new HSWP(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(
         !isDev ? 'production' : 'development',
@@ -206,5 +210,8 @@ module.exports = (env) => ({
       inlineSource: 'runtime~.+\\.js',
     }),
     new HtmlWebpackInlineSourcePlugin(),
+    new CopyWebpackPlugin([
+      { context: `${__dirname}/src/assets`, from: `*.*` },
+    ]),
   ].concat(analyze ? [new BundleAnalyzerPlugin()] : []),
 });
