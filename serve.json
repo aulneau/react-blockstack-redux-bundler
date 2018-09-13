@@ -6,6 +6,10 @@
       "destination": "/assets"
     },
     {
+      "source": "/manfiest.json",
+      "destination": "/manfiest.json"
+    },
+    {
       "source": "**",
       "destination": "/index.html"
     }

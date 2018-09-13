@@ -3,7 +3,14 @@ import ReactDOM from 'react-dom';
 import root from '@containers/root';
 import getStore from './bundles';
 import cache from '@common/utils/cache';
+
 const mountNode = document.getElementById('root');
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js');
+  });
+}
 
 const render = () => {
   cache.getAll().then((initialData) => {

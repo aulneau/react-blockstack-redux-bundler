@@ -10,6 +10,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HSWP = require('hard-source-webpack-plugin');
+const { GenerateSW } = require('workbox-webpack-plugin');
 
 const analyze = process.env.ANALYZE;
 const isDev = process.env.NODE_ENV !== 'production';
@@ -190,12 +191,13 @@ module.exports = {
       short_name: 'Starter',
       description:
         'A starter repo for building Blockstack apps with React and Redux Bundler.',
+      theme_color: '#ffffff',
       background_color: '#ffffff',
       filename: '[name][ext]',
       start_url: '/',
       fingerprints: false,
       inject: false,
-      publicPath: 'http://react-blockstack.now.sh/',
+      publicPath: 'https://react-blockstack.now.sh/',
       icons: [
         {
           src: path.resolve('src/assets/app-icon.png'),
@@ -212,5 +214,29 @@ module.exports = {
     new CopyWebpackPlugin([
       { context: `${__dirname}/src/assets`, from: `*.*` },
     ]),
-  ].concat(analyze ? [new BundleAnalyzerPlugin()] : []),
+  ]
+    .concat(analyze ? [new BundleAnalyzerPlugin()] : [])
+    .concat(
+      !isDev
+        ? [
+            new GenerateSW({
+              swDest: 'sw.js',
+              importWorkboxFrom: 'local',
+              skipWaiting: true,
+              clientsClaim: true,
+              runtimeCaching: [
+                {
+                  urlPattern: '/',
+                  handler: 'networkFirst',
+                  options: {
+                    cacheableResponse: {
+                      statuses: [0, 200],
+                    },
+                  },
+                },
+              ],
+            }),
+          ]
+        : [],
+    ),
 };
