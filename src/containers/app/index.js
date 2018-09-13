@@ -3,7 +3,7 @@ import { connect } from 'redux-bundler-react';
 import navHelper from 'internal-nav-helper';
 import { hot } from 'react-hot-loader';
 
-class App extends PureComponent {
+class Index extends PureComponent {
   componentWillMount() {
     this.handleRedirect();
   }
@@ -49,6 +49,6 @@ export default hot(module)(
     'selectPathname',
     'selectSignedIn',
     'selectSignedInPending',
-    App,
+    Index,
   ),
 );

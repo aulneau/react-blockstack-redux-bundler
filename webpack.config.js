@@ -12,7 +12,40 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
 const analyze = process.env.ANALYZE;
 const isDev = process.env.NODE_ENV !== 'production';
 
-module.exports = {
+const basePlugins = [
+  require.resolve('@babel/plugin-proposal-class-properties'),
+  require.resolve('@babel/plugin-transform-async-to-generator'),
+  require.resolve('@babel/plugin-transform-react-jsx'),
+  require.resolve('@babel/plugin-syntax-dynamic-import'),
+  require.resolve('@babel/plugin-syntax-import-meta'),
+  require.resolve('@babel/plugin-proposal-json-strings'),
+  [
+    require.resolve('@babel/plugin-proposal-decorators'),
+    {
+      legacy: true,
+    },
+  ],
+  require.resolve('@babel/plugin-proposal-function-sent'),
+  require.resolve('@babel/plugin-proposal-export-namespace-from'),
+  require.resolve('@babel/plugin-proposal-numeric-separator'),
+  require.resolve('@babel/plugin-proposal-throw-expressions'),
+  require.resolve('@babel/plugin-proposal-export-default-from'),
+  require.resolve('@babel/plugin-proposal-logical-assignment-operators'),
+  require.resolve('@babel/plugin-proposal-optional-chaining'),
+  [
+    require.resolve('@babel/plugin-proposal-pipeline-operator'),
+    {
+      proposal: 'minimal',
+    },
+  ],
+  require.resolve('@babel/plugin-proposal-nullish-coalescing-operator'),
+  require.resolve('@babel/plugin-proposal-do-expressions'),
+  require.resolve('@babel/plugin-proposal-function-bind'),
+  [require.resolve('fast-async'), { spec: true }],
+];
+
+const devPlugins = [require.resolve('react-hot-loader/babel'), ...basePlugins];
+module.exports = (env) => ({
   entry: {
     main: [path.resolve(__dirname, 'src/index.js')],
   },
@@ -40,6 +73,27 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
+          options: {
+            babelrc: false,
+            presets: [
+              [
+                require.resolve('@babel/preset-env'),
+                {
+                  loose: true,
+                  targets: {
+                    browsers: ['>1%', 'last 2 versions', 'not ie < 10'],
+                  },
+                  modules: false,
+                  exclude: [
+                    'transform-regenerator',
+                    'transform-async-to-generator',
+                  ],
+                },
+              ],
+              require.resolve('@babel/preset-react'),
+            ],
+            plugins: isDev ? devPlugins : basePlugins,
+          },
         },
       },
       {
@@ -64,9 +118,9 @@ module.exports = {
   },
   optimization: {
     nodeEnv: JSON.stringify(process.env.NODE_ENV),
-    minimize: JSON.stringify(process.env.NODE_ENV) === 'production',
-    concatenateModules: JSON.stringify(process.env.NODE_ENV) === 'production',
-    runtimeChunk: JSON.stringify(process.env.NODE_ENV) === 'production',
+    minimize: !isDev,
+    concatenateModules: !isDev,
+    runtimeChunk: !isDev,
     minimizer: [
       new TerserPlugin({
         parallel: true,
@@ -101,14 +155,14 @@ module.exports = {
     },
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(
+        !isDev ? 'production' : 'development',
+      ),
+    }),
     new SizePlugin(),
     new Webpackbar(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(
-        process.env.NODE_ENV === 'production' ? 'production' : 'development',
-      ),
-    }),
     new webpack.NamedChunksPlugin((chunk) => {
       // https://medium.com/webpack/predictable-long-term-caching-with-webpack-d3eee1d3fa31
       // https://github.com/webpack/webpack/issues/1315#issuecomment-386267369
@@ -153,4 +207,4 @@ module.exports = {
     }),
     new HtmlWebpackInlineSourcePlugin(),
   ].concat(analyze ? [new BundleAnalyzerPlugin()] : []),
-};
+});
