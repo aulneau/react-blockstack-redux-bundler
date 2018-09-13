@@ -5270,6 +5270,10 @@ redux-bundler-react@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/redux-bundler-react/-/redux-bundler-react-1.0.0.tgz#ab29cb329a488924448f3298b89e9971e19a3c95"
 
+redux-bundler@^21.2.2:
+  version "21.2.2"
+  resolved "https://registry.yarnpkg.com/redux-bundler/-/redux-bundler-21.2.2.tgz#364612b3e3eb313bb1fce07415e3d2430d7ee59a"
+
 regenerate-unicode-properties@^5.1.1:
   version "5.1.3"
   resolved "https://registry.yarnpkg.com/regenerate-unicode-properties/-/regenerate-unicode-properties-5.1.3.tgz#54f5891543468f36f2274b67c6bc4c033c27b308"

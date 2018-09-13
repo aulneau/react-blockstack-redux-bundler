@@ -47,7 +47,7 @@ const basePlugins = [
 ];
 
 const devPlugins = [require.resolve('react-hot-loader/babel'), ...basePlugins];
-module.exports = (env) => ({
+module.exports = {
   entry: {
     main: [path.resolve(__dirname, 'src/index.js')],
   },
@@ -116,7 +116,6 @@ module.exports = (env) => ({
       '@containers': path.resolve(__dirname, 'src/containers'),
       '@common': path.resolve(__dirname, 'src/common'),
       '@screens': path.resolve(__dirname, 'src/screens'),
-      'redux-bundler': path.resolve(__dirname, 'src/vendor/redux-bundler.m.js'),
     },
   },
   optimization: {
@@ -142,7 +141,7 @@ module.exports = (env) => ({
           name: 'vendors',
           chunks: 'initial',
           enforce: true,
-          test: /[\\/]node_modules[\\/]/,
+          test: /[\\/](node_modules[\\/]/,
           priority: -10,
           reuseExistingChunk: true,
         },
@@ -193,7 +192,7 @@ module.exports = (env) => ({
         'A starter repo for building Blockstack apps with React and Redux Bundler.',
       background_color: '#ffffff',
       filename: '[name][ext]',
-      start_url: 'http://react-blockstack.now.sh/',
+      start_url: '/',
       fingerprints: false,
       inject: false,
       publicPath: 'http://react-blockstack.now.sh/',
@@ -214,4 +213,4 @@ module.exports = (env) => ({
       { context: `${__dirname}/src/assets`, from: `*.*` },
     ]),
   ].concat(analyze ? [new BundleAnalyzerPlugin()] : []),
-});
+};
