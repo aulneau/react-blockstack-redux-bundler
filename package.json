@@ -42,11 +42,14 @@
     "prettier": "^1.12.1",
     "react-hot-loader": "^4.0.0",
     "serve": "^6.5.3",
+    "size-plugin": "^1.0.1",
     "terser-webpack-plugin": "^1.0.2",
     "webpack": "^4.18.1",
+    "webpack-bundle-analyzer": "^3.0.2",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.1",
-    "webpack-pwa-manifest": "^3.6.2"
+    "webpack-pwa-manifest": "^3.6.2",
+    "webpackbar": "^2.6.3"
   },
   "homepage": "https://github.com/aulneau/react-blockstack-redux-bundler",
   "keywords": [
@@ -59,7 +62,7 @@
   "main": "src/index.js",
   "repository": "https://github.com/aulneau/react-blockstack-redux-bundler",
   "scripts": {
-    "build": "webpack --mode production",
+    "build": "NODE_ENV=production webpack --mode production",
     "dev": "webpack-dev-server --mode development --hot",
     "format": "prettier --write \"src/**/*.js\" && echo -e '\\033[0;32m'💅 Just use prettier'\\033[0m'",
     "start": "serve --single --cors dist"

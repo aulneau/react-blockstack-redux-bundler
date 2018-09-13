@@ -2,6 +2,8 @@ const HtmlWebPackPlugin = require('html-webpack-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const TerserPlugin = require('terser-webpack-plugin');
+const SizePlugin = require('size-plugin');
+const Webpackbar = require('webpackbar');
 const webpack = require('webpack');
 const path = require('path');
 
@@ -10,7 +12,8 @@ module.exports = {
     main: ['@babel/polyfill', path.resolve(__dirname, 'src/index.js')],
   },
   output: {
-    filename: '[name].[hash].js',
+    filename: '[name].[contenthash].js',
+    chunkFilename: '[name].chunk.[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
   },
   devServer: {
@@ -75,6 +78,7 @@ module.exports = {
       cacheGroups: {
         vendors: {
           name: 'vendors',
+          chunks: 'initial',
           enforce: true,
           test: /[\\/]node_modules[\\/]/,
           priority: -10,
@@ -92,6 +96,29 @@ module.exports = {
     },
   },
   plugins: [
+    new SizePlugin(),
+    new Webpackbar(),
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(
+        process.env.NODE_ENV === 'production' ? 'production' : 'development',
+      ),
+    }),
+    new webpack.NamedChunksPlugin((chunk) => {
+      if (chunk.name) {
+        return chunk.name;
+      }
+
+      // eslint-disable-next-line no-underscore-dangle
+      return [...chunk._modules]
+        .map((m) =>
+          path.relative(
+            m.context,
+            m.userRequest.substring(0, m.userRequest.lastIndexOf('.')),
+          ),
+        )
+        .join('_');
+    }),
     new WebpackPwaManifest({
       name: 'Blockstack React + Redux Bundler Starter',
       short_name: 'Blockstack Starter',
