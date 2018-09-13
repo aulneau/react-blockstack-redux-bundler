@@ -3,8 +3,6 @@ const SIGN_IN_ERROR = 'auth/SIGN_IN_ERROR';
 const SIGN_OUT = 'auth/SIGN_OUT';
 import { createSelector } from 'redux-bundler';
 
-import { redirectToSignIn, signUserOut } from 'blockstack';
-
 const initialState = {
   signedIn: false,
   user: null,
@@ -50,11 +48,13 @@ export default {
       user,
     });
   },
-  doSignIn: () => () => {
-    redirectToSignIn();
+  doSignIn: () => async () => {
+    const blockstack = await import(/* webpackChunkName: "blockstack.18.0.4" */ 'blockstack');
+    blockstack.redirectToSignIn();
   },
-  doSignOut: () => ({ dispatch }) => {
-    signUserOut();
+  doSignOut: () => async ({ dispatch }) => {
+    const blockstack = await import(/* webpackChunkName: "blockstack.18.0.4" */ 'blockstack');
+    blockstack.signUserOut();
     dispatch({
       type: SIGN_OUT,
     });

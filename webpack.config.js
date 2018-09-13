@@ -6,14 +6,15 @@ const SizePlugin = require('size-plugin');
 const Webpackbar = require('webpackbar');
 const webpack = require('webpack');
 const path = require('path');
+const isDev = process.env.NODE_ENV !== 'production';
 
 module.exports = {
   entry: {
     main: ['@babel/polyfill', path.resolve(__dirname, 'src/index.js')],
   },
   output: {
-    filename: '[name].[contenthash].js',
-    chunkFilename: '[name].chunk.[contenthash].js',
+    filename: isDev ? '[name].js' : '[name].[contenthash].js',
+    chunkFilename: isDev ? '[name].chunk.js' : '[name].chunk.[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
   },
   devServer: {
@@ -74,7 +75,7 @@ module.exports = {
       minSize: 0,
       maxAsyncRequests: Infinity,
       maxInitialRequests: Infinity,
-      name: false,
+      name: true,
       cacheGroups: {
         vendors: {
           name: 'vendors',
@@ -105,6 +106,8 @@ module.exports = {
       ),
     }),
     new webpack.NamedChunksPlugin((chunk) => {
+      // https://medium.com/webpack/predictable-long-term-caching-with-webpack-d3eee1d3fa31
+      // https://github.com/webpack/webpack/issues/1315#issuecomment-386267369
       if (chunk.name) {
         return chunk.name;
       }
@@ -119,6 +122,8 @@ module.exports = {
         )
         .join('_');
     }),
+    new webpack.NamedModulesPlugin(),
+    new webpack.HashedModuleIdsPlugin(),
     new WebpackPwaManifest({
       name: 'Blockstack React + Redux Bundler Starter',
       short_name: 'Blockstack Starter',
