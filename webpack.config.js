@@ -184,7 +184,7 @@ module.exports = (env) => ({
     new webpack.HashedModuleIdsPlugin(),
     new WebpackPwaManifest({
       name: 'Blockstack React + Redux Bundler Starter',
-      short_name: 'Blockstack Starter',
+      short_name: 'Starter',
       description:
         'A starter repo for building Blockstack apps with React and Redux Bundler.',
       background_color: '#ffffff',

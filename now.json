@@ -1,0 +1,11 @@
+{
+  "public": false,
+  "type": "docker",
+  "features": {
+    "cloud": "v2"
+  },
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "alias": "react-blockstack.now.sh"
+}
