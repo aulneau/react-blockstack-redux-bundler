@@ -15,6 +15,11 @@ class Index extends PureComponent {
   }
   componentDidMount() {
     this.handleRedirect();
+
+    const loading = document.getElementById('loader');
+    if (!loading.classList.contains('hidden')) {
+      loading.classList.add('hidden');
+    }
   }
   componentDidUpdate() {
     this.handleRedirect();
