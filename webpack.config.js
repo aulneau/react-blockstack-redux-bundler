@@ -56,6 +56,8 @@ module.exports = {
     filename: isDev ? '[name].js' : '[name].[contenthash].js',
     chunkFilename: isDev ? '[name].chunk.js' : '[name].chunk.[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
+    globalObject: 'this',
+
   },
   devServer: {
     open: true,
@@ -119,6 +121,22 @@ module.exports = {
       '@screens': path.resolve(__dirname, 'src/screens'),
     },
   },
+  node: {
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty',
+    'utf-8-validate:': 'empty',
+    dram: 'empty',
+    dgram: 'empty',
+    preact: 'empty',
+    module: 'empty',
+    bufferutil: 'empty',
+    ws: 'empty',
+    child_process: 'empty',
+    __filename: true,
+    __dirname: true,
+  },
+
   optimization: {
     nodeEnv: JSON.stringify(process.env.NODE_ENV),
     minimize: !isDev,
@@ -219,24 +237,24 @@ module.exports = {
     .concat(
       !isDev
         ? [
-            new GenerateSW({
-              swDest: 'sw.js',
-              importWorkboxFrom: 'local',
-              skipWaiting: true,
-              clientsClaim: true,
-              runtimeCaching: [
-                {
-                  urlPattern: '/',
-                  handler: 'networkFirst',
-                  options: {
-                    cacheableResponse: {
-                      statuses: [0, 200],
-                    },
+          new GenerateSW({
+            swDest: 'sw.js',
+            importWorkboxFrom: 'local',
+            skipWaiting: true,
+            clientsClaim: true,
+            runtimeCaching: [
+              {
+                urlPattern: '/',
+                handler: 'networkFirst',
+                options: {
+                  cacheableResponse: {
+                    statuses: [0, 200],
                   },
                 },
-              ],
-            }),
-          ]
+              },
+            ],
+          }),
+        ]
         : [],
     ),
 };
