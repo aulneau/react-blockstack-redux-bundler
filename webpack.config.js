@@ -1,6 +1,9 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
-const WebpackPwaManifest = require('webpack-pwa-manifest');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const autoprefixer = require('autoprefixer');
+const Stylish = require('webpack-stylish');
+const NameAllModulesPlugin = require('name-all-modules-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const SizePlugin = require('size-plugin');
 const Webpackbar = require('webpackbar');
@@ -11,66 +14,51 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HSWP = require('hard-source-webpack-plugin');
 const { GenerateSW } = require('workbox-webpack-plugin');
+const history = require('connect-history-api-fallback');
+const convert = require('koa-connect');
+const webpackServeWaitpage = require('webpack-serve-waitpage');
 
 const analyze = process.env.ANALYZE;
 const isDev = process.env.NODE_ENV !== 'production';
 
-const basePlugins = [
-  require.resolve('@babel/plugin-proposal-class-properties'),
-  require.resolve('@babel/plugin-transform-async-to-generator'),
-  require.resolve('@babel/plugin-transform-react-jsx'),
-  require.resolve('@babel/plugin-syntax-dynamic-import'),
-  require.resolve('@babel/plugin-syntax-import-meta'),
-  require.resolve('@babel/plugin-proposal-json-strings'),
-  [
-    require.resolve('@babel/plugin-proposal-decorators'),
-    {
-      legacy: true,
-    },
-  ],
-  require.resolve('@babel/plugin-proposal-function-sent'),
-  require.resolve('@babel/plugin-proposal-export-namespace-from'),
-  require.resolve('@babel/plugin-proposal-numeric-separator'),
-  require.resolve('@babel/plugin-proposal-throw-expressions'),
-  require.resolve('@babel/plugin-proposal-export-default-from'),
-  require.resolve('@babel/plugin-proposal-logical-assignment-operators'),
-  require.resolve('@babel/plugin-proposal-optional-chaining'),
-  [
-    require.resolve('@babel/plugin-proposal-pipeline-operator'),
-    {
-      proposal: 'minimal',
-    },
-  ],
-  require.resolve('@babel/plugin-proposal-nullish-coalescing-operator'),
-  require.resolve('@babel/plugin-proposal-do-expressions'),
-  require.resolve('@babel/plugin-proposal-function-bind'),
-  [require.resolve('fast-async'), { spec: true }],
-];
-
-const devPlugins = [require.resolve('react-hot-loader/babel'), ...basePlugins];
 module.exports = {
+  stats: 'none',
   entry: {
     main: [path.resolve(__dirname, 'src/index.js')],
   },
   output: {
-    filename: isDev ? '[name].js' : '[name].[contenthash].js',
-    chunkFilename: isDev ? '[name].chunk.js' : '[name].chunk.[contenthash].js',
-    path: path.resolve(__dirname, 'dist'),
-  },
-  devServer: {
-    open: true,
-    historyApiFallback: true,
-    port: 5050,
-    watchOptions: { aggregateTimeout: 300, poll: 1000 },
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-      'Access-Control-Allow-Headers':
-        'X-Requested-With, content-type, Authorization',
-    },
+    filename: isDev
+      ? 'static/js/[name].js'
+      : 'static/js/[name].[contenthash].js',
+    chunkFilename: isDev
+      ? 'static/js/[name].chunk.js'
+      : 'static/js/[name].chunk.[contenthash].js',
+    path: path.resolve(__dirname, './dist'),
+    globalObject: 'this',
+    publicPath: '/',
   },
   module: {
     rules: [
+      {
+        test: /\.(css|less|s[ac]ss|styl)$/,
+        use: [
+          !isDev ? MiniCssExtractPlugin.loader : 'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: !isDev,
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              sourceMap: true,
+              plugins: [autoprefixer({ browsers: ['> 0.25%', 'IE >= 9'] })],
+            },
+          },
+        ],
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,
@@ -87,17 +75,58 @@ module.exports = {
                     browsers: ['>1%', 'last 2 versions', 'not ie < 10'],
                   },
                   modules: false,
-                  exclude: [
-                    'transform-regenerator',
-                    'transform-async-to-generator',
-                  ],
+                  debug: true,
+                  useBuiltIns: 'usage',
                 },
               ],
               require.resolve('@babel/preset-react'),
             ],
-            plugins: isDev ? devPlugins : basePlugins,
+            plugins: [
+              require.resolve('react-hot-loader/babel'),
+              require.resolve('@babel/plugin-proposal-class-properties'),
+              require.resolve('@babel/plugin-transform-async-to-generator'),
+              require.resolve('@babel/plugin-transform-react-jsx'),
+              require.resolve('@babel/plugin-syntax-dynamic-import'),
+              require.resolve('@babel/plugin-syntax-import-meta'),
+              require.resolve('@babel/plugin-proposal-json-strings'),
+              [
+                require.resolve('@babel/plugin-proposal-decorators'),
+                {
+                  legacy: true,
+                },
+              ],
+              require.resolve('@babel/plugin-proposal-function-sent'),
+              require.resolve('@babel/plugin-proposal-export-namespace-from'),
+              require.resolve('@babel/plugin-proposal-numeric-separator'),
+              require.resolve('@babel/plugin-proposal-throw-expressions'),
+              require.resolve('@babel/plugin-proposal-export-default-from'),
+              require.resolve(
+                '@babel/plugin-proposal-logical-assignment-operators',
+              ),
+              require.resolve('@babel/plugin-proposal-optional-chaining'),
+              [
+                require.resolve('@babel/plugin-proposal-pipeline-operator'),
+                {
+                  proposal: 'minimal',
+                },
+              ],
+              require.resolve(
+                '@babel/plugin-proposal-nullish-coalescing-operator',
+              ),
+              require.resolve('@babel/plugin-proposal-do-expressions'),
+              require.resolve('@babel/plugin-proposal-function-bind'),
+              [require.resolve('fast-async'), { spec: true }],
+            ],
           },
         },
+      },
+      {
+        test: /\.worker\.js$/,
+        use: [
+          {
+            loader: 'workerize-loader',
+          },
+        ],
       },
       {
         test: /\.html$/,
@@ -119,10 +148,27 @@ module.exports = {
       '@screens': path.resolve(__dirname, 'src/screens'),
     },
   },
+  node: {
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty',
+    'utf-8-validate:': 'empty',
+    dram: 'empty',
+    dgram: 'empty',
+    preact: 'empty',
+    module: 'empty',
+    bufferutil: 'empty',
+    ws: 'empty',
+    child_process: 'empty',
+    __filename: true,
+    __dirname: true,
+  },
+
   optimization: {
     nodeEnv: JSON.stringify(process.env.NODE_ENV),
     minimize: !isDev,
     concatenateModules: !isDev,
+    namedModules: false,
     runtimeChunk: !isDev,
     minimizer: [
       new TerserPlugin({
@@ -186,33 +232,43 @@ module.exports = {
     }),
     new webpack.NamedModulesPlugin(),
     new webpack.HashedModuleIdsPlugin(),
-    new WebpackPwaManifest({
-      name: 'Blockstack React + Redux Bundler Starter',
-      short_name: 'Starter',
-      description:
-        'A starter repo for building Blockstack apps with React and Redux Bundler.',
-      theme_color: '#ffffff',
-      background_color: '#ffffff',
-      filename: '[name][ext]',
-      start_url: '/',
-      fingerprints: false,
-      inject: false,
-      publicPath: 'https://react-blockstack.now.sh/',
-      icons: [
-        {
-          src: path.resolve('src/assets/app-icon.png'),
-          sizes: [96, 128, 192, 256, 384, 512],
-        },
-      ],
-    }),
+    new NameAllModulesPlugin(),
+    new Stylish(),
     new HtmlWebPackPlugin({
-      template: path.resolve(__dirname, 'public', 'index.html'),
+      template: `${path.resolve(
+        __dirname,
+        'public',
+        'index.html',
+      )}`,
       filename: path.resolve(__dirname, 'dist', 'index.html'),
       inlineSource: 'runtime~.+\\.js',
+      inject: true,
+      compile: true,
+      minify: !isDev && {
+        collapseWhitespace: true,
+        removeScriptTypeAttributes: true,
+        removeRedundantAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        removeComments: true,
+      },
+    }),
+    new MiniCssExtractPlugin({
+      filename: !isDev
+        ? 'static/css/[name].[contenthash:5].css'
+        : 'static/css/[name].css',
+      chunkFilename: !isDev
+        ? 'static/css/[id].chunk.[contenthash:5].css'
+        : 'static/css/[id].chunk.css',
     }),
     new HtmlWebpackInlineSourcePlugin(),
     new CopyWebpackPlugin([
-      { context: `${__dirname}/src/assets`, from: `*.*` },
+      { context: `${__dirname}/src/assets`, from: `*.js`, to: 'static/js' },
+      { context: `${__dirname}/src/assets`, from: `*.css`, to: 'static/css' },
+      {
+        context: `${__dirname}/src/assets`,
+        from: `*.*`,
+        ignore: ['*.js', '*.css'],
+      },
     ]),
   ]
     .concat(analyze ? [new BundleAnalyzerPlugin()] : [])
@@ -239,4 +295,23 @@ module.exports = {
           ]
         : [],
     ),
+  serve: isDev && {
+    content: [__dirname],
+    devMiddleware: {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods':
+          'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+        'Access-Control-Allow-Headers':
+          'X-Requested-With, content-type, Authorization',
+      },
+    },
+    add: (app, middleware, options) => {
+      const historyOptions = {
+        // ... see: https://github.com/bripkens/connect-history-api-fallback#options
+      };
+      app.use(webpackServeWaitpage(options));
+      app.use(convert(history(historyOptions)));
+    },
+  },
 };
