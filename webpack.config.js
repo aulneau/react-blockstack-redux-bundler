@@ -21,6 +21,30 @@ const webpackServeWaitpage = require('webpack-serve-waitpage');
 const analyze = process.env.ANALYZE;
 const isDev = process.env.NODE_ENV !== 'production';
 
+const serve = isDev
+  ? {
+      serve: {
+        content: [__dirname],
+        devMiddleware: {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods':
+              'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+            'Access-Control-Allow-Headers':
+              'X-Requested-With, content-type, Authorization',
+          },
+        },
+        add: (app, middleware, options) => {
+          const historyOptions = {
+            // ... see: https://github.com/bripkens/connect-history-api-fallback#options
+          };
+          app.use(webpackServeWaitpage(options));
+          app.use(convert(history(historyOptions)));
+        },
+      },
+    }
+  : {};
+
 module.exports = {
   stats: 'none',
   entry: {
@@ -235,11 +259,7 @@ module.exports = {
     new NameAllModulesPlugin(),
     new Stylish(),
     new HtmlWebPackPlugin({
-      template: `${path.resolve(
-        __dirname,
-        'public',
-        'index.html',
-      )}`,
+      template: `${path.resolve(__dirname, 'public', 'index.html')}`,
       filename: path.resolve(__dirname, 'dist', 'index.html'),
       inlineSource: 'runtime~.+\\.js',
       inject: true,
@@ -295,23 +315,5 @@ module.exports = {
           ]
         : [],
     ),
-  serve: isDev && {
-    content: [__dirname],
-    devMiddleware: {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods':
-          'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-        'Access-Control-Allow-Headers':
-          'X-Requested-With, content-type, Authorization',
-      },
-    },
-    add: (app, middleware, options) => {
-      const historyOptions = {
-        // ... see: https://github.com/bripkens/connect-history-api-fallback#options
-      };
-      app.use(webpackServeWaitpage(options));
-      app.use(convert(history(historyOptions)));
-    },
-  },
+  ...serve,
 };
