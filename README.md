@@ -24,6 +24,9 @@ Running `yarn build` will bundle the application for use in production.
 
 Deploy easily with [now](https://now.sh) by running `now` or use another service like heroku/digital ocean.
 
+## Performance
+![Lighthouse Score](./lighthouse.png)
+
 ## About the author
 
 [Thomas Osmonson](https://ineffable.co) is an independent designer and developer. He is the founder of [Coins](https://coinsapp.co), a _decentralized_ cryptocurrency portfolio management tool. Coins is also built with the architecture laid out in this starter kit.
