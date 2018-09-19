@@ -99,7 +99,6 @@ module.exports = {
                     browsers: ['>1%', 'last 2 versions', 'not ie < 10'],
                   },
                   modules: false,
-                  debug: true,
                   useBuiltIns: 'usage',
                 },
               ],
@@ -302,7 +301,7 @@ module.exports = {
               clientsClaim: true,
               runtimeCaching: [
                 {
-                  urlPattern: '/',
+                  urlPattern: new RegExp('https://react-blockstack.now.sh'),
                   handler: 'networkFirst',
                   options: {
                     cacheableResponse: {

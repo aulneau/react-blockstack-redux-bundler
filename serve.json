@@ -5,6 +5,10 @@
       "source": "/assets",
       "destination": "/assets"
     },
+        {
+      "source": "/workbox-v3.5.0/**",
+      "destination": "/workbox-v3.5.0"
+    },
     {
       "source": "/manfiest.json",
       "destination": "/manfiest.json"
