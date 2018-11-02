@@ -3,7 +3,7 @@ export default {
   getExtraArgs: (store) => {
     return {
       handleUserSignIn: async (state) => {
-        const blockstack = await import(/* webpackChunkName: "blockstack.18.0.4" */ 'blockstack');
+        const blockstack = await import(/* webpackChunkName: "blockstack.18.1.0" */ 'blockstack');
         const signedIn = blockstack.isUserSignedIn();
         if (signedIn && state.auth && !state.auth.user) {
           return blockstack.loadUserData();
